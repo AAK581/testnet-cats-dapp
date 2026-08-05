@@ -1,79 +1,54 @@
-# Flow Cats: A Gamified Flow Faucet!
+# Testnet Cats: A Gamified Multi-Network Testnet Faucet
 
+## About this project
 
+### Project Description
+This project combines a blockchain faucet with RPG mechanics. Players collect kittens in an RPG Maker MZ game, then sync their progress online using an in-game Teleporter item. Upon collecting at least 15 kittens, a user can claim a testnet-token reward from the dApp, with a maximum of 4 rewards per day. On some networks, reaching kitten milestones also mints a Milestone NFT.
 
+It started as a Sepolia-only faucet and now supports 5 testnets: Sepolia, Scroll Sepolia, Monad Testnet, Polkadot Moonbase Alpha, and Flow Testnet.
 
-# About this project
+The stack is a React frontend using Reown AppKit and Wagmi, with Foundry-tested smart contracts.
 
-## Project Description
-Flow Cats is a gamified testnet FLOW faucet made on the testnet FLOW blockchain.
-Users can claim testnet FLOWs by collecting kittens in the game which can be synced online using the Teleporter
-in-game item.
-Upon collecting at least 15 kittens, a user can claim a reward from the dApp, with a maximum of 4 rewards per day.
-The game was made using RPG Maker MZ, the dApp was made using a React app using Reown Appkit and Wagmi, and the smart contract was tested
-using Foundry.
+### Directory Structure
 
-## Directory Structure
+- **/react-reown**: the frontend React application
+- **/foundry-smartContract**: the smart contract code, tests, and Foundry configuration
 
-### /react-reown:
-Contains the front-end React app (src/App.jsx, src/App.css, package.json, etc.).
+## Design Patterns
 
-### /foundry-smartContract:
-Contains the smart contract, the test file, and other important files related to Foundry as well as OpenZeppelin's Ownable contract.
+The implementation uses OpenZeppelin's Ownable contract for inheritance. Access control restricts key functions (contract funding, game address configuration, reward modification) to the contract owner.
 
-# Design Patterns
-### Inheritance and interfaces
-Imported OpenZeppelin's Ownable contract (Ownable(msg.sender)).
-### Access Control Design Patterns
-Only the owner (using OpenZeppelin's Ownable contract) can fund the contract without showing up as a donor (fundContract), only the owner can set the address of the game (setGameAddress),
-and only the owner can change the reward (changeReward).
+## Security Measures
 
+The codebase favors require statements over conditionals and uses a modifier to restrict kitten-setting functions to the authorized game contract only. The setKittens function caps a user at 60 kittens. The rewardUser function validates kitten sufficiency, daily reward limits, and contract funding before processing transactions, following the checks-effects-interactions pattern.
 
-# Security Measures
-### Proper Use of Require
-Used throughout the code instead of if-else statements.
-### Use Modifiers Only for Validation
-A modifier was made so that only the game can set the variable (setKittens function) required to redeem the reward so that nobody just sets it using the console.
-modifier onlyGame() {
-    require(msg.sender == gameAddress, "Only game can call");
-    _;
-}
-### Checks-Effects-Interactions
-Several checks are made throughout the functions. For example, the setKittens function checks whether the user has 60 kittens or not. If they do, then they can't add more. This is done
-to prevent hoarding by using a bot, or someone's younger brother!
-Another examples are the checks in the rewardUser function that checks whether the user has enough kittens for a reward or not, whether they have collected enoughr ewards for the
-day or not, and whether the contract has enough funds or not.
-There is also another check that validates whether the user has any FLOW or not. If they don't then they wouldn't be able to claim the reward
-as they wouldn't be able to pay for gas. This is solved by the game dripping at most 0.01 FLOW per day to the user in case they have 0 FLOW.
+## Supported Networks
 
+| Network | Chain ID | Game Contract | Game |
+|---|---|---|---|
+| Sepolia | 11155111 | [0xa9C4cd6C657f5110C6966c78962D47c24D27BD57](https://sepolia.etherscan.io/address/0xa9C4cd6C657f5110C6966c78962D47c24D27BD57) | [play](https://rpg-game-sepolia-cats.vercel.app/) |
+| Scroll Sepolia | 534351 | [0xA45a75B3523334bf4017b0BB9D76d4E06661fba3](https://sepolia.scrollscan.com/address/0xA45a75B3523334bf4017b0BB9D76d4E06661fba3) | [play](https://rpg-game-sepolia-cats.vercel.app/) |
+| Monad Testnet | 10143 | 0x0968F5BF2EdEEEEf0bdB42C304DB24d5CE90B9D7 | [play](https://monad-cats-game.vercel.app/) |
+| Polkadot Moonbase Alpha | 1287 | [0xEDDe9fc8ca8668046f9EAf9b64FDc94620518E26](https://moonbase.moonscan.io/address/0xEDDe9fc8ca8668046f9EAf9b64FDc94620518E26) | [play](https://polkadot-cats-game.vercel.app/) |
+| Flow Testnet | 545 | [0x292Fe1de6ce0ca4917fB6163ECb4C00b395D5804](https://evm-testnet.flowscan.io/address/0x292Fe1de6ce0ca4917fB6163ECb4C00b395D5804) | [play](https://flow-cats-rpg-game.vercel.app/) |
 
-# Important Links and Addresses
+### Milestone NFT Contracts
 
-## Contract Address
-### Game Contract
-0x292Fe1de6ce0ca4917fB6163ECb4C00b395D5804      
-https://evm-testnet.flowscan.io/address/0x292Fe1de6ce0ca4917fB6163ECb4C00b395D5804     
+| Network | NFT Contract |
+|---|---|
+| Polkadot Moonbase Alpha | [0x3BDFaEA81A965643ECD5Bee47dBE28434FF740C8](https://moonbase.moonscan.io/token/0x3BDFaEA81A965643ECD5Bee47dBE28434FF740C8) |
+| Flow Testnet | [0x335777beD22AdA837E46D28AE83ba697eDD09d62](https://evm-testnet.flowscan.io/token/0x335777beD22AdA837E46D28AE83ba697eDD09d62) |
 
-### NFT Contract      
-0x335777beD22AdA837E46D28AE83ba697eDD09d62      
-https://evm-testnet.flowscan.io/address/0x335777beD22AdA837E46D28AE83ba697eDD09d62
+### Application Link
+https://testnet-cats-dapp.vercel.app/
 
-## dApp link
-https://flow-cats-dapp.vercel.app/
+## How To Run Tests
 
-## Game link
-https://flow-cats-rpg-game.vercel.app/
+Install Foundry (https://book.getfoundry.sh/introduction/installation/), then run "forge test" inside /foundry-smartContract.
 
+## How To Run The Program
 
-# How To Run Tests
-In order to run the test functions in the GameContract.t.sol file, just run "forge test" after installing Foundry in /foundry-smartContract.
-In order to install Foundry, follow this guide: https://book.getfoundry.sh/introduction/installation/
+For the frontend: navigate to /react-reown, run "npm install", then "npm run dev". The games are hosted at the links in the table above.
 
-
-# How To Run The Program
-To run the dApp using the files, open a terminal in /react-reown and run "npm install" to retrieve the required dependencies and then run "npm run dev" to run the web application.
-To run the game using the files, go to https://github.com/AAK581/flow-Cats-rpg-game and download the files, then open a terminal and run "npm http-server".
-However, it's recommended to just use the links mentioned above.
-
-# Demo
-
+## Demo
+Video of the original Sepolia version: https://drive.google.com/file/d/1JIVIAH64-9euZEi7hedDiXJMlxMTK9NS/view?usp=drive_link
